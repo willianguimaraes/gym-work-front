@@ -1,0 +1,53 @@
+// Estilos globais. Mobile-first: o layout base é pensado para telas pequenas.
+
+// Tokens de superfície por tema
+:root {
+  --app-surface: #ffffff;
+  --app-on-surface: #1f2328;
+  --app-muted: #5f6672;
+  --app-border: rgba(0, 0, 0, 0.12);
+}
+
+.body--dark {
+  --app-surface: #171a20; // mesmo valor de $dark em quasar-variables.scss
+  --app-on-surface: #e8eaed;
+  --app-muted: #9aa1ad;
+  --app-border: rgba(255, 255, 255, 0.08);
+}
+
+html,
+body {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+// Cabeçalho e navegação inferior acompanham a superfície do tema
+.app-bar {
+  background: var(--app-surface) !important;
+  color: var(--app-on-surface) !important;
+}
+
+.q-header.app-bar {
+  border-bottom: 1px solid var(--app-border);
+}
+
+.q-footer.app-bar {
+  border-top: 1px solid var(--app-border);
+}
+
+// Texto secundário legível nos dois temas
+.text-muted {
+  color: var(--app-muted) !important;
+}
+
+// Respeita o notch / barra inferior em iPhones
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+// Área de conteúdo com largura confortável em telas maiores
+.page-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
