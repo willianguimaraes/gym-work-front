@@ -27,6 +27,12 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: env.VITE_API_PROXY_TARGET || 'http://localhost:8080',
           changeOrigin: true,
+          // O navegador envia Origin com o IP do PC (ex.: http://192.168.1.10:5173) quando aberto
+          // no celular; o CORS do backend só libera localhost. Pelo proxy a chamada é de mesma
+          // origem para o navegador, então o cabeçalho pode ser removido com segurança.
+          configure: (proxy) => {
+            proxy.on('proxyReq', (proxyReq) => proxyReq.removeHeader('origin'))
+          },
         },
       },
     },
