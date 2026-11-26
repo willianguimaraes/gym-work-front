@@ -1,4 +1,5 @@
 import type { Equipment, ExerciseType } from '@/types/exercise'
+import type { Suggestion, Trend } from '@/types/progression'
 import type { DayOfWeek, PlanGoal, PlanStatus } from '@/types/training'
 import type {
   BodyRegion,
@@ -207,4 +208,50 @@ export function formatDuration(startIso: string, endIso: string | null | undefin
   const minutes = Math.max(0, Math.round((end - new Date(startIso).getTime()) / 60000))
   if (minutes < 60) return `${minutes} min`
   return `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')} min`
+}
+
+// ---------------------------------------------------------------------------- evolução
+
+export const trendLabel: Record<Trend, string> = {
+  PROGRESSING: 'Em progresso',
+  STABLE: 'Estável',
+  REGRESSING: 'Em queda',
+  INCOMPLETE: 'Incompleto',
+  INSUFFICIENT_DATA: 'Poucos dados',
+}
+
+export const trendColor: Record<Trend, string> = {
+  PROGRESSING: 'positive',
+  STABLE: 'primary',
+  REGRESSING: 'negative',
+  INCOMPLETE: 'warning',
+  INSUFFICIENT_DATA: 'grey-7',
+}
+
+export const trendIcon: Record<Trend, string> = {
+  PROGRESSING: 'trending_up',
+  STABLE: 'trending_flat',
+  REGRESSING: 'trending_down',
+  INCOMPLETE: 'hourglass_bottom',
+  INSUFFICIENT_DATA: 'more_horiz',
+}
+
+export const suggestionLabel: Record<Suggestion, string> = {
+  INCREASE_LOAD: 'Avaliar aumento de carga',
+  ADD_REPS: 'Buscar mais repetições',
+  CONFIRM_TOP: 'Confirmar o teto',
+  REVIEW_RIR: 'Manter a carga (RIR)',
+  REVIEW_PERFORMANCE: 'Rever recuperação',
+  HOLD_PAIN: 'Dor registrada',
+  NONE: '',
+}
+
+export const suggestionIcon: Record<Suggestion, string> = {
+  INCREASE_LOAD: 'north',
+  ADD_REPS: 'add',
+  CONFIRM_TOP: 'replay',
+  REVIEW_RIR: 'speed',
+  REVIEW_PERFORMANCE: 'bedtime',
+  HOLD_PAIN: 'healing',
+  NONE: 'info',
 }

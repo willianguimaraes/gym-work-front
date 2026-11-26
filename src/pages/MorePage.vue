@@ -1,6 +1,12 @@
 <script setup lang="ts">
 const items = [
   {
+    to: 'progression',
+    icon: 'insights',
+    label: 'Evolução',
+    caption: 'Progressão por exercício, volume e frequência',
+  },
+  {
     to: 'plans',
     icon: 'event_note',
     label: 'Planejamentos',

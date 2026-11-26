@@ -16,6 +16,7 @@ A API fica em [gym-work-back](https://github.com/willianguimaraes/gym-work-back)
 | Pinia | 4 |
 | Vue Router | 5 |
 | Axios | 1 |
+| Chart.js | 4 (gráficos de evolução) |
 | ESLint / Prettier | 10 / 3 |
 
 ## Como rodar
@@ -66,13 +67,15 @@ Copie `.env.example` para `.env.local` se precisar mudar algo:
 | `/treinar` | Retomar o treino em andamento ou iniciar o dia de hoje (ou treino avulso) |
 | `/treino/:id` | Execução: séries com carga/reps pré-preenchidas, cronômetro, pular, substituir, observações, finalizar; também mostra treinos finalizados |
 | `/historico` | Histórico de treinos |
-| `/mais` | Menu: planejamentos, catálogo, perfil |
+| `/evolucao` | Exercícios em progresso, estáveis e em queda (por período ou fase), frequência e séries por grupo muscular |
+| `/mais` | Menu: evolução, planejamentos, catálogo, perfil |
 | `/planos` | Lista de planejamentos |
 | `/planos/:id` | Planejamento: fases, ativar, duplicar, concluir, arquivar, excluir |
 | `/fases/:id` | Fase: semanas (deload), dias de treino, reordenar, duplicar |
 | `/dias/:id` | Dia de treino: exercícios com séries/reps/descanso/carga/RIR, reordenar, substituir |
 | `/exercicios` | Catálogo com busca e filtros |
-| `/exercicios/novo`, `/exercicios/:id`, `/exercicios/:id/editar` | Exercício personalizado |
+| `/exercicios/:id` | Exercício: aba Evolução (última, melhor, análise, gráfico, histórico, observações, regra de progressão) e Detalhes |
+| `/exercicios/novo`, `/exercicios/:id/editar` | Exercício personalizado |
 | `/perfil` | Perfil, sair e excluir conta |
 | `/perfil/dados` | Nome, altura e data de nascimento |
 | `/perfil/preferencias` | Tema, unidades (kg/lb, cm/pol), descanso padrão, som, fuso horário |

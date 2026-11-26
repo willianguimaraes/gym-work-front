@@ -41,6 +41,12 @@ export const routes: RouteRecordRaw[] = [
         meta: { title: 'Histórico' },
       },
       {
+        path: 'evolucao',
+        name: 'progression',
+        component: () => import('@/pages/progression/ProgressionPage.vue'),
+        meta: { title: 'Evolução', back: 'more' },
+      },
+      {
         path: 'mais',
         name: 'more',
         component: () => import('@/pages/MorePage.vue'),
