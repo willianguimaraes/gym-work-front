@@ -77,6 +77,18 @@ export const routes: RouteRecordRaw[] = [
         meta: { title: 'Evolução', back: 'more' },
       },
       {
+        path: 'relatorios',
+        name: 'reports',
+        component: () => import('@/pages/report/ReportsPage.vue'),
+        meta: { title: 'Relatórios', back: 'more' },
+      },
+      {
+        path: 'relatorios/:scope(sessao|semana|fase)/:id',
+        name: 'report',
+        component: () => import('@/pages/report/ReportPage.vue'),
+        meta: { title: 'Relatório', back: 'reports' },
+      },
+      {
         path: 'mais',
         name: 'more',
         component: () => import('@/pages/MorePage.vue'),

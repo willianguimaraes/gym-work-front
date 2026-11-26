@@ -356,6 +356,13 @@ async function discard() {
                       <q-item-section avatar><q-icon name="note_add" /></q-item-section>
                       <q-item-section>Observação (sono, energia…)</q-item-section>
                     </q-item>
+                    <q-item
+                      clickable
+                      :to="{ name: 'report', params: { scope: 'sessao', id: session.id } }"
+                    >
+                      <q-item-section avatar><q-icon name="description" /></q-item-section>
+                      <q-item-section>Relatório (copiar ou exportar)</q-item-section>
+                    </q-item>
                     <q-item v-if="!inProgress" clickable @click="editing = !editing">
                       <q-item-section avatar
                         ><q-icon :name="editing ? 'done' : 'edit'"

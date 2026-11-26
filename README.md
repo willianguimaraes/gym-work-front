@@ -72,7 +72,9 @@ Copie `.env.example` para `.env.local` se precisar mudar algo:
 | `/avaliacao/:id` | Avaliação com medidas e fotos por posição |
 | `/avaliacao/comparar` | Comparativo entre duas datas, com as fotos lado a lado |
 | `/evolucao` | Exercícios em progresso, estáveis e em queda (por período ou fase), frequência e séries por grupo muscular |
-| `/mais` | Menu: evolução, planejamentos, catálogo, perfil |
+| `/mais` | Menu: evolução, relatórios, planejamentos, catálogo, perfil |
+| `/relatorios` | Relatórios: escolhe o planejamento e abre a fase, uma semana ou o pacote para IA; exporta o planejamento em JSON |
+| `/relatorios/:escopo/:id` | Relatório de sessão, semana ou fase: copiar, baixar TXT/PDF/CSV, aba Análise e (fase) aba Pacote para IA |
 | `/planos` | Lista de planejamentos |
 | `/planos/:id` | Planejamento: fases, ativar, duplicar, concluir, arquivar, excluir |
 | `/fases/:id` | Fase: semanas (deload), dias de treino, reordenar, duplicar |
@@ -92,6 +94,10 @@ Cada série vai para a API na hora. Se a conexão cair com o app aberto, a séri
 ## Fotos de evolução
 
 Antes do envio, o app reduz a foto para no máximo 1600 px e a regrava em JPEG (`utils/image.ts`). O upload fica rápido no celular e os metadados da câmera são descartados, inclusive a localização GPS. As fotos são privadas: a API devolve links assinados que valem 5 minutos, e o app pede um novo link se o anterior vencer.
+
+## Relatórios e pacote para IA
+
+O texto do relatório segue o formato de acompanhamento (`FASE … / SEMANA … / SEG — UPPER / exercício: carga | reps`). "Copiar" funciona também pelo IP da rede (http), com o fallback do Quasar. Os downloads (TXT, PDF, CSV, .md, .json) vêm da API com o nome do arquivo e são salvos pelo `exportFile` do Quasar (`utils/files.ts`). No fim de uma fase, a aba **Pacote para IA** copia ou baixa tudo o que a IA precisa para avaliar a fase e devolver o próximo plano no template `gymwork.plan/v1`.
 
 ## Tema e unidades
 

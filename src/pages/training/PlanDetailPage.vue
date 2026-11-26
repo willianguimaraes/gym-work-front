@@ -6,9 +6,11 @@ import PhaseFormDialog from '@/components/training/PhaseFormDialog.vue'
 import PlanFormDialog from '@/components/training/PlanFormDialog.vue'
 import { usePageHeader } from '@/composables/usePageHeader'
 import { getErrorMessage } from '@/services/api'
+import { reportService } from '@/services/report.service'
 import { trainingService } from '@/services/training.service'
 import type { Phase, PhaseRequest, Plan, PlanRequest, PlanStatus } from '@/types/training'
 import { confirmAction, openDialog } from '@/utils/dialogs'
+import { saveFile } from '@/utils/files'
 import { formatDate, formatPeriod, goalLabel, statusColor, statusLabel } from '@/utils/labels'
 
 const $q = useQuasar()
@@ -95,6 +97,16 @@ function setStatus(status: PlanStatus) {
   }, `Marcado como ${statusLabel[status].toLowerCase()}`)
 }
 
+/** Baixa o planejamento no template gymwork.plan/v1 (o mesmo da futura importação). */
+async function exportTemplate() {
+  if (!plan.value) return
+  try {
+    saveFile(await reportService.planTemplate(plan.value.id))
+  } catch (e) {
+    $q.notify({ type: 'negative', message: getErrorMessage(e) })
+  }
+}
+
 function duplicate() {
   const current = plan.value
   if (!current) return
@@ -177,6 +189,10 @@ async function addPhase() {
                     <q-item clickable @click="duplicate">
                       <q-item-section avatar><q-icon name="content_copy" /></q-item-section>
                       <q-item-section>Duplicar</q-item-section>
+                    </q-item>
+                    <q-item clickable @click="exportTemplate">
+                      <q-item-section avatar><q-icon name="schema" /></q-item-section>
+                      <q-item-section>Exportar (JSON)</q-item-section>
                     </q-item>
                     <q-item
                       v-if="plan.status !== 'COMPLETED'"

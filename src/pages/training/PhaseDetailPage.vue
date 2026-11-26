@@ -164,6 +164,24 @@ function exerciseSummary(day: WorkoutDay): string {
                       <q-item-section avatar><q-icon name="edit" /></q-item-section>
                       <q-item-section>Editar</q-item-section>
                     </q-item>
+                    <q-item
+                      clickable
+                      :to="{ name: 'report', params: { scope: 'fase', id: phase.id } }"
+                    >
+                      <q-item-section avatar><q-icon name="description" /></q-item-section>
+                      <q-item-section>Relatório da fase</q-item-section>
+                    </q-item>
+                    <q-item
+                      clickable
+                      :to="{
+                        name: 'report',
+                        params: { scope: 'fase', id: phase.id },
+                        query: { tab: 'ai' },
+                      }"
+                    >
+                      <q-item-section avatar><q-icon name="smart_toy" /></q-item-section>
+                      <q-item-section>Pacote para IA</q-item-section>
+                    </q-item>
                     <q-item clickable @click="duplicate">
                       <q-item-section avatar><q-icon name="content_copy" /></q-item-section>
                       <q-item-section>Criar nova fase a partir desta</q-item-section>

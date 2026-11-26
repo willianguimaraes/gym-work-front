@@ -7,6 +7,12 @@ const items = [
     caption: 'Progressão por exercício, volume e frequência',
   },
   {
+    to: 'reports',
+    icon: 'description',
+    label: 'Relatórios',
+    caption: 'Semana, fase, TXT/PDF/CSV e pacote para IA',
+  },
+  {
     to: 'plans',
     icon: 'event_note',
     label: 'Planejamentos',
