@@ -12,8 +12,14 @@ const back = computed(
   () => header.back.value ?? (route.meta.back ? { name: route.meta.back } : null),
 )
 
-/** Aba inferior destacada: Início só na própria tela; o resto fica sob "Mais". */
-const activeTab = computed(() => (route.name === 'home' ? 'home' : 'more'))
+/** Aba inferior destacada a partir da rota atual; o que não é das outras abas fica sob "Mais". */
+const TAB_BY_ROUTE: Record<string, string> = {
+  home: 'home',
+  history: 'history',
+  train: 'train',
+  session: 'train',
+}
+const activeTab = computed(() => TAB_BY_ROUTE[String(route.name)] ?? 'more')
 
 function openTab(tab: string) {
   void router.push({ name: tab })
@@ -54,8 +60,23 @@ function openTab(tab: string) {
         :model-value="activeTab"
       >
         <q-tab name="home" icon="home" label="Início" @click="openTab('home')" />
+        <q-tab name="history" icon="history" label="Histórico" @click="openTab('history')" />
+        <q-tab
+          name="train"
+          icon="play_circle"
+          label="Treinar"
+          class="train-tab"
+          @click="openTab('train')"
+        />
         <q-tab name="more" icon="menu" label="Mais" @click="openTab('more')" />
       </q-tabs>
     </q-footer>
   </q-layout>
 </template>
+
+<style scoped>
+.train-tab :deep(.q-tab__icon) {
+  font-size: 30px;
+  color: var(--q-primary);
+}
+</style>

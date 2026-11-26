@@ -92,7 +92,9 @@ export function getErrorMessage(
   fallback = 'Algo deu errado. Tente novamente.',
 ): string {
   if (axios.isAxiosError<ProblemDetail>(error)) {
-    if (!error.response) return 'Sem conexão com o servidor.'
+    if (!error.response || [502, 503, 504].includes(error.response.status)) {
+      return 'Sem conexão com o servidor.'
+    }
     const data = error.response.data
     if (data?.errors) return Object.values(data.errors).join('\n')
     if (data?.detail) return data.detail

@@ -23,6 +23,24 @@ export const routes: RouteRecordRaw[] = [
         meta: { title: 'Início' },
       },
       {
+        path: 'treinar',
+        name: 'train',
+        component: () => import('@/pages/workout/TrainPage.vue'),
+        meta: { title: 'Treinar' },
+      },
+      {
+        path: 'treino/:id',
+        name: 'session',
+        component: () => import('@/pages/workout/SessionPage.vue'),
+        meta: { title: 'Treino', back: 'train' },
+      },
+      {
+        path: 'historico',
+        name: 'history',
+        component: () => import('@/pages/workout/HistoryPage.vue'),
+        meta: { title: 'Histórico' },
+      },
+      {
         path: 'mais',
         name: 'more',
         component: () => import('@/pages/MorePage.vue'),
