@@ -62,7 +62,14 @@ Copie `.env.example` para `.env.local` se precisar mudar algo:
 | --- | --- |
 | `/login`, `/cadastro` | Login e cadastro |
 | `/esqueci-senha`, `/redefinir-senha?token=…` | Recuperação de senha (link enviado por e-mail) |
-| `/` | Início |
+| `/` | Início (planejamento ativo) |
+| `/mais` | Menu: planejamentos, catálogo, perfil |
+| `/planos` | Lista de planejamentos |
+| `/planos/:id` | Planejamento: fases, ativar, duplicar, concluir, arquivar, excluir |
+| `/fases/:id` | Fase: semanas (deload), dias de treino, reordenar, duplicar |
+| `/dias/:id` | Dia de treino: exercícios com séries/reps/descanso/carga/RIR, reordenar, substituir |
+| `/exercicios` | Catálogo com busca e filtros |
+| `/exercicios/novo`, `/exercicios/:id`, `/exercicios/:id/editar` | Exercício personalizado |
 | `/perfil` | Perfil, sair e excluir conta |
 | `/perfil/dados` | Nome, altura e data de nascimento |
 | `/perfil/preferencias` | Tema, unidades (kg/lb, cm/pol), descanso padrão, som, fuso horário |
@@ -72,4 +79,4 @@ Copie `.env.example` para `.env.local` se precisar mudar algo:
 
 O tema escuro é o padrão. Em **Perfil → Preferências** dá para trocar entre Escuro, Claro e Sistema; a escolha é salva na conta e também no navegador, para a tela de login já abrir no tema certo.
 
-A API guarda sempre kg e cm; a conversão para lb e polegadas é feita só na exibição (`utils/units.ts`).
+A API guarda sempre kg e cm; a conversão para lb e polegadas é feita só na exibição e na digitação (`utils/units.ts`), inclusive na carga sugerida dos exercícios do plano.

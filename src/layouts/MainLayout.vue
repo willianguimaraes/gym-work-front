@@ -1,10 +1,23 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { usePageHeaderState } from '@/composables/usePageHeader'
 
 const route = useRoute()
-const title = computed(() => route.meta.title ?? 'Gym Work')
-const back = computed(() => route.meta.back)
+const router = useRouter()
+const header = usePageHeaderState()
+
+const title = computed(() => header.title.value ?? route.meta.title ?? 'Gym Work')
+const back = computed(
+  () => header.back.value ?? (route.meta.back ? { name: route.meta.back } : null),
+)
+
+/** Aba inferior destacada: Início só na própria tela; o resto fica sob "Mais". */
+const activeTab = computed(() => (route.name === 'home' ? 'home' : 'more'))
+
+function openTab(tab: string) {
+  void router.push({ name: tab })
+}
 </script>
 
 <template>
@@ -18,7 +31,7 @@ const back = computed(() => route.meta.back)
           dense
           icon="arrow_back"
           aria-label="Voltar"
-          :to="{ name: back }"
+          :to="back"
           class="q-mr-sm"
         />
         <q-icon v-else name="fitness_center" color="primary" size="24px" class="q-mr-sm" />
@@ -38,9 +51,10 @@ const back = computed(() => route.meta.back)
         active-color="primary"
         indicator-color="transparent"
         class="page-container text-muted"
+        :model-value="activeTab"
       >
-        <q-route-tab :to="{ name: 'home' }" exact icon="home" label="Início" />
-        <q-route-tab :to="{ name: 'profile' }" icon="person" label="Perfil" />
+        <q-tab name="home" icon="home" label="Início" @click="openTab('home')" />
+        <q-tab name="more" icon="menu" label="Mais" @click="openTab('more')" />
       </q-tabs>
     </q-footer>
   </q-layout>

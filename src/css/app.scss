@@ -45,6 +45,18 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+// Diálogos de formulário abrem como "folha" inferior no celular
+.dialog-card {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 16px 16px 0 0 !important;
+}
+
+// Preserva quebras de linha de observações digitadas pelo usuário
+.pre-line {
+  white-space: pre-line;
+}
+
 // Área de conteúdo com largura confortável em telas maiores
 .page-container {
   width: 100%;
