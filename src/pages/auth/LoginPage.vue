@@ -61,6 +61,12 @@ async function onSubmit() {
       </template>
     </q-input>
 
+    <div class="text-right">
+      <router-link :to="{ name: 'forgot-password' }" class="text-primary text-body2">
+        Esqueci minha senha
+      </router-link>
+    </div>
+
     <q-btn
       type="submit"
       label="Entrar"

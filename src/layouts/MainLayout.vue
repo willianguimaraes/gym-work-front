@@ -4,13 +4,24 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const title = computed(() => route.meta.title ?? 'Gym Work')
+const back = computed(() => route.meta.back)
 </script>
 
 <template>
   <q-layout view="hHh lpR fFf">
     <q-header class="app-bar">
       <q-toolbar>
-        <q-icon name="fitness_center" color="primary" size="24px" class="q-mr-sm" />
+        <q-btn
+          v-if="back"
+          flat
+          round
+          dense
+          icon="arrow_back"
+          aria-label="Voltar"
+          :to="{ name: back }"
+          class="q-mr-sm"
+        />
+        <q-icon v-else name="fitness_center" color="primary" size="24px" class="q-mr-sm" />
         <q-toolbar-title class="text-weight-bold">{{ title }}</q-toolbar-title>
       </q-toolbar>
     </q-header>

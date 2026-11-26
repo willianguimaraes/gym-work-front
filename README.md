@@ -50,6 +50,26 @@ Copie `.env.example` para `.env.local` se precisar mudar algo:
 | `VITE_API_URL` | URL da API em produção. Vazio em desenvolvimento (usa o proxy). |
 | `VITE_API_PROXY_TARGET` | Destino do proxy em desenvolvimento (padrão `http://localhost:8080`). |
 
-## Tema
+## Sessão
 
-O tema escuro é o padrão. Em **Perfil** dá para trocar entre Escuro, Claro e Sistema; a escolha fica salva no navegador.
+- O token de acesso fica **só em memória** (nunca no `localStorage`).
+- Ao abrir ou recarregar o app, a sessão é restaurada chamando `/api/auth/refresh`; o navegador envia sozinho o cookie `HttpOnly` de refresh, que o JavaScript não consegue ler.
+- Quando a API responde 401, o `services/api.ts` renova o token uma vez e repete a requisição. Renovações simultâneas são agrupadas, e entre abas são serializadas com a Web Locks API.
+
+## Telas
+
+| Rota | Tela |
+| --- | --- |
+| `/login`, `/cadastro` | Login e cadastro |
+| `/esqueci-senha`, `/redefinir-senha?token=…` | Recuperação de senha (link enviado por e-mail) |
+| `/` | Início |
+| `/perfil` | Perfil, sair e excluir conta |
+| `/perfil/dados` | Nome, altura e data de nascimento |
+| `/perfil/preferencias` | Tema, unidades (kg/lb, cm/pol), descanso padrão, som, fuso horário |
+| `/perfil/senha` | Alterar senha |
+
+## Tema e unidades
+
+O tema escuro é o padrão. Em **Perfil → Preferências** dá para trocar entre Escuro, Claro e Sistema; a escolha é salva na conta e também no navegador, para a tela de login já abrir no tema certo.
+
+A API guarda sempre kg e cm; a conversão para lb e polegadas é feita só na exibição (`utils/units.ts`).

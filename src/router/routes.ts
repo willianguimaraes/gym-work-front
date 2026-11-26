@@ -5,6 +5,8 @@ declare module 'vue-router' {
     requiresAuth?: boolean
     guestOnly?: boolean
     title?: string
+    /** Rota de volta exibida no cabeçalho (telas internas). */
+    back?: string
   }
 }
 
@@ -23,8 +25,26 @@ export const routes: RouteRecordRaw[] = [
       {
         path: 'perfil',
         name: 'profile',
-        component: () => import('@/pages/ProfilePage.vue'),
+        component: () => import('@/pages/account/ProfilePage.vue'),
         meta: { title: 'Perfil' },
+      },
+      {
+        path: 'perfil/dados',
+        name: 'personal-data',
+        component: () => import('@/pages/account/PersonalDataPage.vue'),
+        meta: { title: 'Dados pessoais', back: 'profile' },
+      },
+      {
+        path: 'perfil/preferencias',
+        name: 'preferences',
+        component: () => import('@/pages/account/PreferencesPage.vue'),
+        meta: { title: 'Preferências', back: 'profile' },
+      },
+      {
+        path: 'perfil/senha',
+        name: 'change-password',
+        component: () => import('@/pages/account/ChangePasswordPage.vue'),
+        meta: { title: 'Alterar senha', back: 'profile' },
       },
     ],
   },
@@ -33,8 +53,24 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/layouts/AuthLayout.vue'),
     meta: { guestOnly: true },
     children: [
-      { path: 'login', name: 'login', component: () => import('@/pages/LoginPage.vue') },
-      { path: 'cadastro', name: 'register', component: () => import('@/pages/RegisterPage.vue') },
+      { path: 'login', name: 'login', component: () => import('@/pages/auth/LoginPage.vue') },
+      {
+        path: 'cadastro',
+        name: 'register',
+        component: () => import('@/pages/auth/RegisterPage.vue'),
+      },
+      {
+        path: 'esqueci-senha',
+        name: 'forgot-password',
+        component: () => import('@/pages/auth/ForgotPasswordPage.vue'),
+      },
+      {
+        // Aberto pelo link do e-mail; funciona com ou sem sessão ativa
+        path: 'redefinir-senha',
+        name: 'reset-password',
+        component: () => import('@/pages/auth/ResetPasswordPage.vue'),
+        meta: { guestOnly: false },
+      },
     ],
   },
   {

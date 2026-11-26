@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useSettingsStore } from '@/stores/settings'
 import { routes } from './routes'
 
 const router = createRouter({
@@ -10,6 +11,7 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
+  await auth.restore()
 
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
     return { name: 'login', query: { redirect: to.fullPath } }
@@ -19,11 +21,12 @@ router.beforeEach(async (to) => {
     return { name: 'home' }
   }
 
-  if (auth.isAuthenticated) {
+  const settings = useSettingsStore()
+  if (auth.isAuthenticated && !settings.settings) {
     try {
-      await auth.loadUser()
+      await settings.load()
     } catch {
-      // 401 já é tratado pelo interceptor; outros erros não devem bloquear a navegação
+      // sem as preferências o app continua funcionando com os padrões
     }
   }
 

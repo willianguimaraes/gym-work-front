@@ -1,36 +1,86 @@
-import axios, { AxiosError } from 'axios'
-import type { ProblemDetail } from '@/types/auth'
+import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios'
+import type { AuthResponse, ProblemDetail } from '@/types/auth'
 
-export const TOKEN_STORAGE_KEY = 'gymwork.token'
+const baseURL = import.meta.env.VITE_API_URL || ''
 
+/** Cliente da API. `withCredentials` envia o cookie de refresh quando a API está em outro subdomínio. */
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '',
+  baseURL,
   timeout: 15000,
+  withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 })
 
+/** Cliente sem interceptors, usado só para renovar a sessão (evita recursão no 401). */
+const refreshClient = axios.create({ baseURL, timeout: 15000, withCredentials: true })
+
+interface AuthHooks {
+  getAccessToken: () => string | null
+  onRefreshed: (session: AuthResponse) => void
+  onSessionExpired: () => void
+}
+
+let hooks: AuthHooks | null = null
+
+/** Registrado pela store de autenticação (evita dependência circular api ↔ store). */
+export function configureAuth(authHooks: AuthHooks) {
+  hooks = authHooks
+}
+
+let refreshInFlight: Promise<AuthResponse | null> | null = null
+
+/**
+ * Renova o token de acesso usando o cookie de refresh. Chamadas simultâneas compartilham a mesma
+ * requisição, e o Web Locks API serializa a renovação entre abas (o cookie é trocado a cada uso).
+ * Retorna `null` se não houver sessão válida.
+ */
+export function refreshSession(): Promise<AuthResponse | null> {
+  refreshInFlight ??= withCrossTabLock(async () => {
+    try {
+      const { data } = await refreshClient.post<AuthResponse>('/api/auth/refresh')
+      hooks?.onRefreshed(data)
+      return data
+    } catch {
+      return null
+    }
+  }).finally(() => {
+    refreshInFlight = null
+  })
+  return refreshInFlight
+}
+
+function withCrossTabLock<T>(task: () => Promise<T>): Promise<T> {
+  if (typeof navigator !== 'undefined' && navigator.locks) {
+    return navigator.locks.request('gymwork-session-refresh', task)
+  }
+  return task()
+}
+
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem(TOKEN_STORAGE_KEY)
+  const token = hooks?.getAccessToken()
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
   return config
 })
 
-type UnauthorizedHandler = () => void
-let onUnauthorized: UnauthorizedHandler | null = null
-
-/** Registrado pela store de auth: chamado quando a API responde 401 (token expirado/inválido). */
-export function setUnauthorizedHandler(handler: UnauthorizedHandler) {
-  onUnauthorized = handler
-}
+type RetriableConfig = InternalAxiosRequestConfig & { _retried?: boolean }
 
 api.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
-    const isAuthEndpoint = error.config?.url?.startsWith('/api/auth/')
-    if (error.response?.status === 401 && !isAuthEndpoint) {
-      onUnauthorized?.()
+  async (error: AxiosError) => {
+    const config = error.config as RetriableConfig | undefined
+    const isAuthEndpoint = config?.url?.startsWith('/api/auth/')
+
+    // Token de acesso expirado: renova uma vez e repete a requisição original
+    if (error.response?.status === 401 && config && !isAuthEndpoint && !config._retried) {
+      config._retried = true
+      const session = await refreshSession()
+      if (session) {
+        config.headers.Authorization = `Bearer ${session.accessToken}`
+        return api(config)
+      }
+      hooks?.onSessionExpired()
     }
     return Promise.reject(error)
   },
@@ -48,4 +98,12 @@ export function getErrorMessage(
     if (data?.detail) return data.detail
   }
   return fallback
+}
+
+/** Erros por campo (`errors` do ProblemDetail), para exibir direto nos inputs. */
+export function getFieldErrors(error: unknown): Record<string, string> {
+  if (axios.isAxiosError<ProblemDetail>(error)) {
+    return error.response?.data?.errors ?? {}
+  }
+  return {}
 }

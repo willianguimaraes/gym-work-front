@@ -1,20 +1,57 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { authService } from '@/services/auth.service'
-import { TOKEN_STORAGE_KEY, setUnauthorizedHandler } from '@/services/api'
+import { configureAuth, refreshSession } from '@/services/api'
 import type { AuthResponse, LoginRequest, RegisterRequest, User } from '@/types/auth'
 import router from '@/router'
 
+/** Chave usada pela versão anterior, que guardava o token no localStorage. */
+const LEGACY_TOKEN_KEY = 'gymwork.token'
+
+/**
+ * Sessão do usuário. O token de acesso fica só em memória (não é lido por scripts injetados via
+ * localStorage); ao recarregar a página a sessão é restaurada pelo cookie HttpOnly de refresh.
+ */
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref<string | null>(localStorage.getItem(TOKEN_STORAGE_KEY))
+  const accessToken = ref<string | null>(null)
   const user = ref<User | null>(null)
+  const isAuthenticated = computed(() => !!accessToken.value)
 
-  const isAuthenticated = computed(() => !!token.value)
+  let restorePromise: Promise<void> | null = null
 
-  function applySession(response: AuthResponse) {
-    token.value = response.accessToken
-    user.value = response.user
-    localStorage.setItem(TOKEN_STORAGE_KEY, response.accessToken)
+  function applySession(session: AuthResponse) {
+    accessToken.value = session.accessToken
+    user.value = session.user
+  }
+
+  function clearSession() {
+    accessToken.value = null
+    user.value = null
+  }
+
+  configureAuth({
+    getAccessToken: () => accessToken.value,
+    onRefreshed: applySession,
+    onSessionExpired: () => {
+      clearSession()
+      const current = router.currentRoute.value
+      if (current.meta.requiresAuth) {
+        void router.replace({ name: 'login', query: { redirect: current.fullPath } })
+      }
+    },
+  })
+
+  /** Tenta restaurar a sessão uma única vez ao abrir o app. */
+  function restore(): Promise<void> {
+    restorePromise ??= (async () => {
+      try {
+        localStorage.removeItem(LEGACY_TOKEN_KEY)
+      } catch {
+        // ignorado
+      }
+      await refreshSession()
+    })()
+    return restorePromise
   }
 
   async function login(payload: LoginRequest) {
@@ -25,22 +62,23 @@ export const useAuthStore = defineStore('auth', () => {
     applySession(await authService.register(payload))
   }
 
-  /** Carrega o usuário quando já existe token salvo (ex.: ao recarregar a página). */
-  async function loadUser() {
-    if (!token.value || user.value) return
-    user.value = await authService.me()
+  async function logout() {
+    try {
+      await authService.logout()
+    } finally {
+      clearSession()
+    }
   }
 
-  function logout() {
-    token.value = null
-    user.value = null
-    localStorage.removeItem(TOKEN_STORAGE_KEY)
+  return {
+    accessToken,
+    user,
+    isAuthenticated,
+    restore,
+    login,
+    register,
+    logout,
+    applySession,
+    clearSession,
   }
-
-  setUnauthorizedHandler(() => {
-    logout()
-    void router.replace({ name: 'login' })
-  })
-
-  return { token, user, isAuthenticated, login, register, loadUser, logout }
 })
