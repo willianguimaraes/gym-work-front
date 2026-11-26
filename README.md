@@ -67,6 +67,10 @@ Copie `.env.example` para `.env.local` se precisar mudar algo:
 | `/treinar` | Retomar o treino em andamento ou iniciar o dia de hoje (ou treino avulso) |
 | `/treino/:id` | Execução: séries com carga/reps pré-preenchidas, cronômetro, pular, substituir, observações, finalizar; também mostra treinos finalizados |
 | `/historico` | Histórico de treinos |
+| `/avaliacao` | Registro rápido de peso, gráficos de peso e medidas, lista de avaliações |
+| `/avaliacao/nova`, `/avaliacao/:id/editar` | Avaliação: data, peso, gordura, altura, 12 medidas (todas opcionais) |
+| `/avaliacao/:id` | Avaliação com medidas e fotos por posição |
+| `/avaliacao/comparar` | Comparativo entre duas datas, com as fotos lado a lado |
 | `/evolucao` | Exercícios em progresso, estáveis e em queda (por período ou fase), frequência e séries por grupo muscular |
 | `/mais` | Menu: evolução, planejamentos, catálogo, perfil |
 | `/planos` | Lista de planejamentos |
@@ -84,6 +88,10 @@ Copie `.env.example` para `.env.local` se precisar mudar algo:
 ## Treino sem internet
 
 Cada série vai para a API na hora. Se a conexão cair com o app aberto, a série fica numa fila no navegador (ícone de nuvem na linha) e é enviada quando a API volta; o `clientId` de cada série impede duplicar. O cronômetro de descanso guarda o horário de término, então continua certo depois de recarregar a página. Reabrir o app totalmente sem internet ainda não é suportado (modo offline completo previsto para a Etapa 8).
+
+## Fotos de evolução
+
+Antes do envio, o app reduz a foto para no máximo 1600 px e a regrava em JPEG (`utils/image.ts`). O upload fica rápido no celular e os metadados da câmera são descartados, inclusive a localização GPS. As fotos são privadas: a API devolve links assinados que valem 5 minutos, e o app pede um novo link se o anterior vencer.
 
 ## Tema e unidades
 

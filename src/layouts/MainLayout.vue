@@ -18,6 +18,11 @@ const TAB_BY_ROUTE: Record<string, string> = {
   history: 'history',
   train: 'train',
   session: 'train',
+  assessments: 'assessments',
+  'assessment-new': 'assessments',
+  'assessment-compare': 'assessments',
+  assessment: 'assessments',
+  'assessment-edit': 'assessments',
 }
 const activeTab = computed(() => TAB_BY_ROUTE[String(route.name)] ?? 'more')
 
@@ -56,7 +61,7 @@ function openTab(tab: string) {
         dense
         active-color="primary"
         indicator-color="transparent"
-        class="page-container text-muted"
+        class="page-container text-muted bottom-tabs"
         :model-value="activeTab"
       >
         <q-tab name="home" icon="home" label="Início" @click="openTab('home')" />
@@ -68,6 +73,12 @@ function openTab(tab: string) {
           class="train-tab"
           @click="openTab('train')"
         />
+        <q-tab
+          name="assessments"
+          icon="accessibility_new"
+          label="Avaliação"
+          @click="openTab('assessments')"
+        />
         <q-tab name="more" icon="menu" label="Mais" @click="openTab('more')" />
       </q-tabs>
     </q-footer>
@@ -75,6 +86,15 @@ function openTab(tab: string) {
 </template>
 
 <style scoped>
+/* 5 abas dividem a largura igualmente, mesmo em telas de 320 px */
+.bottom-tabs :deep(.q-tab) {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 2px;
+}
+.bottom-tabs :deep(.q-tab__label) {
+  font-size: 12px;
+}
 .train-tab :deep(.q-tab__icon) {
   font-size: 30px;
   color: var(--q-primary);

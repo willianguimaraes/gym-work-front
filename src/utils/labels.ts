@@ -1,3 +1,4 @@
+import type { MeasurementType, PhotoPosition } from '@/types/assessment'
 import type { Equipment, ExerciseType } from '@/types/exercise'
 import type { Suggestion, Trend } from '@/types/progression'
 import type { DayOfWeek, PlanGoal, PlanStatus } from '@/types/training'
@@ -254,4 +255,31 @@ export const suggestionIcon: Record<Suggestion, string> = {
   REVIEW_PERFORMANCE: 'bedtime',
   HOLD_PAIN: 'healing',
   NONE: 'info',
+}
+
+// ---------------------------------------------------------------------------- avaliação física
+
+export const measurementLabel: Record<MeasurementType, string> = {
+  SHOULDERS: 'Ombros',
+  CHEST: 'Peitoral',
+  WAIST: 'Cintura',
+  ABDOMEN: 'Abdômen',
+  ARM_RIGHT: 'Braço direito',
+  ARM_LEFT: 'Braço esquerdo',
+  FOREARM_RIGHT: 'Antebraço direito',
+  FOREARM_LEFT: 'Antebraço esquerdo',
+  THIGH_RIGHT: 'Coxa direita',
+  THIGH_LEFT: 'Coxa esquerda',
+  CALF_RIGHT: 'Panturrilha direita',
+  CALF_LEFT: 'Panturrilha esquerda',
+}
+
+export const MEASUREMENT_TYPES = Object.keys(measurementLabel) as MeasurementType[]
+
+export const photoPositionLabel: Record<PhotoPosition, string> = {
+  FRONT: 'Frente',
+  RIGHT: 'Lateral direita',
+  LEFT: 'Lateral esquerda',
+  BACK: 'Costas',
+  OTHER: 'Outra',
 }

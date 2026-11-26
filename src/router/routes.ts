@@ -41,6 +41,36 @@ export const routes: RouteRecordRaw[] = [
         meta: { title: 'Histórico' },
       },
       {
+        path: 'avaliacao',
+        name: 'assessments',
+        component: () => import('@/pages/assessment/AssessmentsPage.vue'),
+        meta: { title: 'Avaliação física' },
+      },
+      {
+        path: 'avaliacao/nova',
+        name: 'assessment-new',
+        component: () => import('@/pages/assessment/AssessmentFormPage.vue'),
+        meta: { title: 'Nova avaliação', back: 'assessments' },
+      },
+      {
+        path: 'avaliacao/comparar',
+        name: 'assessment-compare',
+        component: () => import('@/pages/assessment/AssessmentComparePage.vue'),
+        meta: { title: 'Comparar avaliações', back: 'assessments' },
+      },
+      {
+        path: 'avaliacao/:id',
+        name: 'assessment',
+        component: () => import('@/pages/assessment/AssessmentDetailPage.vue'),
+        meta: { title: 'Avaliação', back: 'assessments' },
+      },
+      {
+        path: 'avaliacao/:id/editar',
+        name: 'assessment-edit',
+        component: () => import('@/pages/assessment/AssessmentFormPage.vue'),
+        meta: { title: 'Editar avaliação', back: 'assessments' },
+      },
+      {
         path: 'evolucao',
         name: 'progression',
         component: () => import('@/pages/progression/ProgressionPage.vue'),
