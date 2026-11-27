@@ -20,7 +20,15 @@ const error = ref('')
 const busy = ref(false)
 const tab = ref<'evolution' | 'details'>('evolution')
 
-usePageHeader({ title: computed(() => exercise.value?.name) })
+/** Volta para onde o exercício foi aberto (início ou evolução); senão, o catálogo. */
+const BACK_FROM: Record<string, string> = { home: 'home', progression: 'progression' }
+usePageHeader({
+  title: computed(() => exercise.value?.name),
+  back: computed(() => {
+    const from = typeof route.query.from === 'string' ? BACK_FROM[route.query.from] : undefined
+    return from ? { name: from } : null
+  }),
+})
 
 async function load() {
   loading.value = true

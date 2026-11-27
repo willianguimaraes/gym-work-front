@@ -30,9 +30,23 @@ export function configureAuth(authHooks: AuthHooks) {
 let refreshInFlight: Promise<AuthResponse | null> | null = null
 
 /**
+ * A API não foi alcançada: sem resposta (rede caiu, timeout), gateway/proxy sem o servidor
+ * (502/503/504) ou erro que não veio da API (sem corpo ProblemDetail). Vale tentar de novo depois.
+ */
+export function isNetworkError(error: unknown): boolean {
+  if (!axios.isAxiosError(error)) return false
+  const response = error.response
+  if (!response) return true
+  if ([502, 503, 504].includes(response.status)) return true
+  const body = response.data as { status?: unknown } | undefined
+  return response.status >= 500 && (typeof body !== 'object' || body?.status === undefined)
+}
+
+/**
  * Renova o token de acesso usando o cookie de refresh. Chamadas simultâneas compartilham a mesma
  * requisição, e o Web Locks API serializa a renovação entre abas (o cookie é trocado a cada uso).
- * Retorna `null` se não houver sessão válida.
+ * Retorna `null` se não houver sessão válida; **lança o erro** se a API não for alcançada (sem
+ * internet), para o app não tratar a falta de rede como sessão encerrada.
  */
 export function refreshSession(): Promise<AuthResponse | null> {
   refreshInFlight ??= withCrossTabLock(async () => {
@@ -40,7 +54,8 @@ export function refreshSession(): Promise<AuthResponse | null> {
       const { data } = await refreshClient.post<AuthResponse>('/api/auth/refresh')
       hooks?.onRefreshed(data)
       return data
-    } catch {
+    } catch (error) {
+      if (isNetworkError(error)) throw error
       return null
     }
   }).finally(() => {
@@ -75,7 +90,13 @@ api.interceptors.response.use(
     // Token de acesso expirado: renova uma vez e repete a requisição original
     if (error.response?.status === 401 && config && !isAuthEndpoint && !config._retried) {
       config._retried = true
-      const session = await refreshSession()
+      let session: AuthResponse | null
+      try {
+        session = await refreshSession()
+      } catch (networkError) {
+        // sem internet: devolve o erro de rede (a fila offline guarda e tenta de novo depois)
+        return Promise.reject(networkError)
+      }
       if (session) {
         config.headers.Authorization = `Bearer ${session.accessToken}`
         return api(config)

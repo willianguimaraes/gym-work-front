@@ -2,10 +2,12 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePageHeaderState } from '@/composables/usePageHeader'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
 const header = usePageHeaderState()
+const auth = useAuthStore()
 
 const title = computed(() => header.title.value ?? route.meta.title ?? 'Gym Work')
 const back = computed(
@@ -51,6 +53,16 @@ function openTab(tab: string) {
     </q-header>
 
     <q-page-container>
+      <div
+        v-if="auth.offline && route.name !== 'session'"
+        class="offline-bar row items-center no-wrap q-px-md q-py-xs"
+      >
+        <q-icon name="cloud_off" size="18px" class="q-mr-sm" />
+        <span class="col text-caption">
+          Sem conexão. O treino em andamento e as séries ficam salvos no aparelho e são enviados
+          quando a internet voltar.
+        </span>
+      </div>
       <router-view />
     </q-page-container>
 
@@ -86,6 +98,10 @@ function openTab(tab: string) {
 </template>
 
 <style scoped>
+.offline-bar {
+  background: var(--q-warning);
+  color: #1f2328;
+}
 /* 5 abas dividem a largura igualmente, mesmo em telas de 320 px */
 .bottom-tabs :deep(.q-tab) {
   flex: 1 1 0;

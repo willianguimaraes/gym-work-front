@@ -13,7 +13,7 @@ router.beforeEach(async (to) => {
   const auth = useAuthStore()
   await auth.restore()
 
-  if (to.meta.requiresAuth && !auth.isAuthenticated) {
+  if (to.meta.requiresAuth && !auth.canUseApp) {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
 
@@ -22,7 +22,7 @@ router.beforeEach(async (to) => {
   }
 
   const settings = useSettingsStore()
-  if (auth.isAuthenticated && !settings.settings) {
+  if (auth.canUseApp && !settings.settings) {
     try {
       await settings.load()
     } catch {

@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="vite-plugin-pwa/client" />
 
 interface ImportMetaEnv {
   /** URL base da API. Vazio em dev (usa o proxy do Vite); em produção, ex.: https://api.gymwork.com */

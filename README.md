@@ -17,6 +17,8 @@ A API fica em [gym-work-back](https://github.com/willianguimaraes/gym-work-back)
 | Vue Router | 5 |
 | Axios | 1 |
 | Chart.js | 4 (gráficos de evolução) |
+| vite-plugin-pwa | 2 (app instalável e offline) |
+| Vitest | 5 (testes unitários) |
 | ESLint / Prettier | 10 / 3 |
 
 ## Como rodar
@@ -41,6 +43,8 @@ Abre em http://localhost:5173. Em desenvolvimento, as chamadas a `/api` passam p
 | `npm run type-check` | Só a checagem de tipos |
 | `npm run lint` | ESLint com correção automática |
 | `npm run format` | Prettier |
+| `npm test` | Testes unitários (Vitest) |
+| `npm run preview` | Serve o build (com o service worker), também com o proxy `/api` |
 
 ## Configuração
 
@@ -63,7 +67,7 @@ Copie `.env.example` para `.env.local` se precisar mudar algo:
 | --- | --- |
 | `/login`, `/cadastro` | Login e cadastro |
 | `/esqueci-senha`, `/redefinir-senha?token=…` | Recuperação de senha (link enviado por e-mail) |
-| `/` | Início (planejamento ativo) |
+| `/` | Início (dashboard): treino de hoje, plano/fase/semana, indicadores, exercícios por tendência, gráficos de carga, frequência, corpo e séries por grupo, últimos treinos e observações |
 | `/treinar` | Retomar o treino em andamento ou iniciar o dia de hoje (ou treino avulso) |
 | `/treino/:id` | Execução: séries com carga/reps pré-preenchidas, cronômetro, pular, substituir, observações, finalizar; também mostra treinos finalizados |
 | `/historico` | Histórico de treinos |
@@ -87,9 +91,16 @@ Copie `.env.example` para `.env.local` se precisar mudar algo:
 | `/perfil/preferencias` | Tema, unidades (kg/lb, cm/pol), descanso padrão, som, fuso horário |
 | `/perfil/senha` | Alterar senha |
 
-## Treino sem internet
+## Treino sem internet e instalação (PWA)
 
-Cada série vai para a API na hora. Se a conexão cair com o app aberto, a série fica numa fila no navegador (ícone de nuvem na linha) e é enviada quando a API volta; o `clientId` de cada série impede duplicar. O cronômetro de descanso guarda o horário de término, então continua certo depois de recarregar a página. Reabrir o app totalmente sem internet ainda não é suportado (modo offline completo previsto para a Etapa 8).
+Cada série vai para a API na hora. Se a conexão cair com o app aberto, a série fica numa fila no navegador (ícone de nuvem na linha) e é enviada quando a API volta; o `clientId` de cada série impede duplicar. O cronômetro de descanso guarda o horário de término, então continua certo depois de recarregar a página.
+
+O build é um **PWA**: dá para instalar no celular ("Adicionar à tela inicial") e abrir **sem internet**. O service worker guarda só os arquivos do app; os dados da API nunca ficam em cache. Sem rede ao abrir, o app entra em modo sem conexão com o último usuário (só nome e e-mail ficam no aparelho), retoma o treino em andamento salvo no aparelho e reconecta sozinho quando a internet volta. Começar um treino novo precisa da API.
+
+- O service worker só existe no build: teste com `npm run build` e `npm run preview`.
+- Quando sai uma versão nova, o app avisa e só atualiza ao tocar em **Atualizar** (não recarrega no meio de um treino).
+- Os ícones ficam em `public/icons` e são gerados por `python scripts/generate-icons.py`.
+- No celular pela rede local (`http://<ip-do-pc>`), o navegador não instala PWA nem ativa o service worker (exige HTTPS, exceto em `localhost`). Em produção, com HTTPS, funciona normalmente.
 
 ## Fotos de evolução
 

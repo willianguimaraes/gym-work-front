@@ -196,7 +196,11 @@ onMounted(load)
               v-for="item in group.items"
               :key="item.exerciseId"
               clickable
-              :to="{ name: 'exercise', params: { id: item.exerciseId } }"
+              :to="{
+                name: 'exercise',
+                params: { id: item.exerciseId },
+                query: { from: 'progression' },
+              }"
             >
               <q-item-section>
                 <q-item-label class="text-weight-medium">{{ item.exerciseName }}</q-item-label>

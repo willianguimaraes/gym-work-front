@@ -9,7 +9,7 @@ const PATH: Record<ReportScope, string> = {
 }
 
 /** Nome do arquivo do cabeçalho Content-Disposition (ou o padrão informado). */
-function filenameFrom(header: unknown, fallback: string): string {
+export function filenameFrom(header: unknown, fallback: string): string {
   const value = typeof header === 'string' ? header : ''
   const utf8 = /filename\*=UTF-8''([^;]+)/i.exec(value)
   if (utf8?.[1]) return decodeURIComponent(utf8[1])

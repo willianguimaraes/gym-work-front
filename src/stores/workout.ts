@@ -1,7 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import axios from 'axios'
-import { getErrorMessage } from '@/services/api'
+import { getErrorMessage, isNetworkError } from '@/services/api'
 import { workoutService } from '@/services/workout.service'
 import type { Session, SessionExercise, SetRequest, WorkoutSet } from '@/types/workout'
 import { uuid } from '@/utils/uuid'
@@ -43,18 +42,7 @@ function writeJson(key: string, value: unknown) {
   }
 }
 
-/**
- * A API não foi alcançada: sem resposta (rede caiu, timeout), gateway/proxy sem o servidor
- * (502/503/504) ou erro que não veio da API (sem corpo ProblemDetail). Vale tentar de novo depois.
- */
-export function isNetworkError(error: unknown): boolean {
-  if (!axios.isAxiosError(error)) return false
-  const response = error.response
-  if (!response) return true
-  if ([502, 503, 504].includes(response.status)) return true
-  const body = response.data as { status?: unknown } | undefined
-  return response.status >= 500 && (typeof body !== 'object' || body?.status === undefined)
-}
+export { isNetworkError }
 
 /** Séries válidas concluídas (trabalho e adicionais); aquecimento, drop set etc. não contam. */
 export function countsAsSet(set: Pick<WorkoutSet, 'status' | 'setType'>): boolean {
@@ -227,9 +215,16 @@ export const useWorkoutStore = defineStore('workout', () => {
     scheduleRetry()
   }
 
+  /** Treino em andamento guardado no aparelho (para retomar sem internet). */
+  function cachedSession(): Session | null {
+    const cached = readJson<Session | null>(SESSION_KEY, null)
+    return cached?.status === 'IN_PROGRESS' ? cached : null
+  }
+
   return {
     session,
     queue,
+    cachedSession,
     syncing,
     offline,
     failures,

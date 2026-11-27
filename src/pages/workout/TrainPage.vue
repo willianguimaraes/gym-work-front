@@ -3,8 +3,9 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import axios from 'axios'
-import { getErrorMessage } from '@/services/api'
+import { getErrorMessage, isNetworkError } from '@/services/api'
 import { workoutService } from '@/services/workout.service'
+import { useWorkoutStore } from '@/stores/workout'
 import type { ProblemDetail } from '@/types/auth'
 import type { StartOptions } from '@/types/workout'
 import { dayOfWeekLabel, formatDuration, formatShortDate } from '@/utils/labels'
@@ -12,6 +13,7 @@ import { dayOfWeekLabel, formatDuration, formatShortDate } from '@/utils/labels'
 /** Tela "Treinar": retomar a sessão em andamento ou escolher o dia de treino de hoje. */
 const $q = useQuasar()
 const router = useRouter()
+const workout = useWorkoutStore()
 
 const data = ref<StartOptions | null>(null)
 const loading = ref(true)
@@ -31,6 +33,11 @@ async function load(phaseId?: string | null) {
   try {
     data.value = await workoutService.startOptions(phaseId)
   } catch (e) {
+    const cached = isNetworkError(e) ? workout.cachedSession() : null
+    if (cached) {
+      await router.replace({ name: 'session', params: { id: cached.id } })
+      return
+    }
     error.value = getErrorMessage(e)
   } finally {
     loading.value = false

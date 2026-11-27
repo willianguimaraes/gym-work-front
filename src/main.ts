@@ -10,6 +10,7 @@ import './css/app.scss'
 import App from './App.vue'
 import router from './router'
 import { getStoredTheme, toQuasarDark } from './utils/theme'
+import { setupPwa } from './pwa'
 
 const app = createApp(App)
 
@@ -26,3 +27,4 @@ app.use(Quasar, {
 })
 
 app.mount('#app')
+setupPwa()
