@@ -101,6 +101,12 @@ export const routes: RouteRecordRaw[] = [
         meta: { title: 'Planejamentos', back: 'more' },
       },
       {
+        path: 'planos/importar',
+        name: 'plan-import',
+        component: () => import('@/pages/training/ImportPlanPage.vue'),
+        meta: { title: 'Importar planejamento', back: 'plans' },
+      },
+      {
         path: 'planos/:id',
         name: 'plan',
         component: () => import('@/pages/training/PlanDetailPage.vue'),

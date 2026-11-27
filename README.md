@@ -79,8 +79,9 @@ Copie `.env.example` para `.env.local` se precisar mudar algo:
 | `/mais` | Menu: evolução, relatórios, planejamentos, catálogo, perfil |
 | `/relatorios` | Relatórios: escolhe o planejamento e abre a fase, uma semana ou o pacote para IA; exporta o planejamento em JSON |
 | `/relatorios/:escopo/:id` | Relatório de sessão, semana ou fase: copiar, baixar TXT/PDF/CSV, aba Análise e (fase) aba Pacote para IA |
-| `/planos` | Lista de planejamentos |
-| `/planos/:id` | Planejamento: fases, ativar, duplicar, concluir, arquivar, excluir |
+| `/planos` | Lista de planejamentos e atalho para importar |
+| `/planos/importar?planId=` | Importar planejamento (JSON `gymwork.plan/v1`): colar ou escolher o arquivo, ver problemas e a prévia, escolher os exercícios que não estão no catálogo e confirmar |
+| `/planos/:id` | Planejamento: fases, ativar, duplicar, concluir, arquivar, excluir, exportar e importar fases (JSON) |
 | `/fases/:id` | Fase: semanas (deload), dias de treino, reordenar, duplicar |
 | `/dias/:id` | Dia de treino: exercícios com séries/reps/descanso/carga/RIR, reordenar, substituir |
 | `/exercicios` | Catálogo com busca e filtros |
@@ -106,9 +107,9 @@ O build é um **PWA**: dá para instalar no celular ("Adicionar à tela inicial"
 
 Antes do envio, o app reduz a foto para no máximo 1600 px e a regrava em JPEG (`utils/image.ts`). O upload fica rápido no celular e os metadados da câmera são descartados, inclusive a localização GPS. As fotos são privadas: a API devolve links assinados que valem 5 minutos, e o app pede um novo link se o anterior vencer.
 
-## Relatórios e pacote para IA
+## Relatórios, pacote para IA e importação
 
-O texto do relatório segue o formato de acompanhamento (`FASE … / SEMANA … / SEG — UPPER / exercício: carga | reps`). "Copiar" funciona também pelo IP da rede (http), com o fallback do Quasar. Os downloads (TXT, PDF, CSV, .md, .json) vêm da API com o nome do arquivo e são salvos pelo `exportFile` do Quasar (`utils/files.ts`). No fim de uma fase, a aba **Pacote para IA** copia ou baixa tudo o que a IA precisa para avaliar a fase e devolver o próximo plano no template `gymwork.plan/v1`.
+O texto do relatório segue o formato de acompanhamento (`FASE … / SEMANA … / SEG — UPPER / exercício: carga | reps`). "Copiar" funciona também pelo IP da rede (http), com o fallback do Quasar. Os downloads (TXT, PDF, CSV, .md, .json) vêm da API com o nome do arquivo e são salvos pelo `exportFile` do Quasar (`utils/files.ts`). No fim de uma fase, a aba **Pacote para IA** copia ou baixa tudo o que a IA precisa para avaliar a fase e devolver o próximo plano no template `gymwork.plan/v1`. A resposta volta pelo botão **Importar a resposta da IA**, que abre a importação já apontando para o planejamento da fase: o app aceita o texto do chat como veio (com explicações e a cerca ```` ```json ````), mostra os problemas (e um texto pronto para pedir a correção à IA) e só grava depois da confirmação, sempre como algo novo (rascunho ou fases no fim do plano).
 
 ## Tema e unidades
 

@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import AnalysisView from '@/components/report/AnalysisView.vue'
 import { usePageHeader } from '@/composables/usePageHeader'
 import { getErrorMessage } from '@/services/api'
 import { reportService } from '@/services/report.service'
+import { trainingService } from '@/services/training.service'
 import type { AnalysisReport, DownloadedFile, ReportFormat, ReportScope } from '@/types/report'
 import { copyText, saveFile } from '@/utils/files'
 
 /** Relatório de sessão, semana ou fase: texto para copiar/baixar, análise e (fase) pacote para IA. */
 const $q = useQuasar()
 const route = useRoute()
+const router = useRouter()
 
 const scope = computed(() => route.params.scope as ReportScope)
 const id = computed(() => String(route.params.id))
@@ -65,6 +67,19 @@ watch(tab, async (value) => {
     $q.notify({ type: 'negative', message: getErrorMessage(e) })
   }
 })
+
+/** A resposta da IA é a próxima fase: abre a importação já apontando para o plano desta fase. */
+async function openImport() {
+  busy.value = 'import'
+  try {
+    const phase = await trainingService.getPhase(id.value)
+    await router.push({ name: 'plan-import', query: { planId: phase.planId } })
+  } catch (e) {
+    $q.notify({ type: 'negative', message: getErrorMessage(e) })
+  } finally {
+    busy.value = null
+  }
+}
 
 async function copy(content: string, message: string) {
   const ok = await copyText(content)
@@ -214,6 +229,18 @@ const formats: { format: ReportFormat; label: string; icon: string }[] = [
                 class="full-width"
                 :loading="busy === 'template'"
                 @click="download('template', () => reportService.phaseTemplate(id))"
+              />
+            </div>
+            <div class="col-12">
+              <q-btn
+                outline
+                color="primary"
+                no-caps
+                icon="upload_file"
+                label="Importar a resposta da IA"
+                class="full-width"
+                :loading="busy === 'import'"
+                @click="openImport"
               />
             </div>
           </div>

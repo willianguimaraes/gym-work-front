@@ -64,10 +64,31 @@ onMounted(load)
             label="Criar planejamento"
             @click="createPlan"
           />
+          <div>
+            <q-btn
+              flat
+              no-caps
+              color="primary"
+              icon="upload_file"
+              label="Importar de um JSON (IA ou exportação)"
+              :to="{ name: 'plan-import' }"
+            />
+          </div>
         </q-card-section>
       </q-card>
 
       <template v-else>
+        <div class="row justify-end">
+          <q-btn
+            flat
+            dense
+            no-caps
+            color="primary"
+            icon="upload_file"
+            label="Importar JSON"
+            :to="{ name: 'plan-import' }"
+          />
+        </div>
         <q-card
           v-for="plan in plans"
           :key="plan.id"

@@ -97,7 +97,7 @@ function setStatus(status: PlanStatus) {
   }, `Marcado como ${statusLabel[status].toLowerCase()}`)
 }
 
-/** Baixa o planejamento no template gymwork.plan/v1 (o mesmo da futura importação). */
+/** Baixa o planejamento no template gymwork.plan/v1 (o mesmo da importação). */
 async function exportTemplate() {
   if (!plan.value) return
   try {
@@ -193,6 +193,10 @@ async function addPhase() {
                     <q-item clickable @click="exportTemplate">
                       <q-item-section avatar><q-icon name="schema" /></q-item-section>
                       <q-item-section>Exportar (JSON)</q-item-section>
+                    </q-item>
+                    <q-item clickable :to="{ name: 'plan-import', query: { planId: plan.id } }">
+                      <q-item-section avatar><q-icon name="upload_file" /></q-item-section>
+                      <q-item-section>Importar fases (JSON)</q-item-section>
                     </q-item>
                     <q-item
                       v-if="plan.status !== 'COMPLETED'"

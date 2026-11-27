@@ -6,6 +6,9 @@ import type {
   Plan,
   PlannedExercise,
   PlannedExerciseRequest,
+  PlanImportPreview,
+  PlanImportRequest,
+  PlanImportResult,
   PlanRequest,
   PlanSummary,
   Week,
@@ -40,6 +43,16 @@ export const trainingService = {
   },
   async duplicatePlan(id: string): Promise<Plan> {
     const { data } = await api.post<Plan>(`/api/plans/${id}/duplicate`)
+    return data
+  },
+
+  // Importação (template gymwork.plan/v1)
+  async previewImport(payload: PlanImportRequest): Promise<PlanImportPreview> {
+    const { data } = await api.post<PlanImportPreview>('/api/plans/import/preview', payload)
+    return data
+  },
+  async importPlan(payload: PlanImportRequest): Promise<PlanImportResult> {
+    const { data } = await api.post<PlanImportResult>('/api/plans/import', payload)
     return data
   },
 

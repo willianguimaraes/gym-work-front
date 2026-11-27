@@ -128,3 +128,75 @@ export interface PhaseRequest {
   weeksCount: number
   notes: string | null
 }
+
+/** Template gymwork.plan/v1 (exportação, pacote para IA e importação). */
+export interface PlanTemplate {
+  format: string
+  plan: { name: string | null; goal: PlanGoal | null; notes: string | null } | null
+  phases: {
+    name: string
+    weeks: number
+    deloadWeeks: number[]
+    notes: string | null
+    days: {
+      name: string
+      dayOfWeek: DayOfWeek | null
+      notes: string | null
+      exercises: {
+        exercise: string
+        sets: number
+        repsMin: number
+        repsMax: number
+        restSeconds: number | null
+        targetRir: number | null
+        suggestedLoadKg: number | null
+        notes: string | null
+      }[]
+    }[]
+  }[]
+}
+
+export interface PlanImportRequest {
+  content: string
+  planId?: string | null
+  /** Nome como está no arquivo → ID do exercício escolhido. */
+  exercises?: Record<string, string>
+}
+
+export interface ImportIssue {
+  path: string
+  location: string
+  message: string
+}
+
+export type MatchStatus = 'MATCHED' | 'CHOSEN' | 'AMBIGUOUS' | 'NOT_FOUND'
+
+export interface ImportCandidate {
+  id: string
+  name: string
+  primaryMuscleGroup: string
+  equipment: Equipment
+  custom: boolean
+}
+
+export interface ExerciseMatch {
+  name: string
+  status: MatchStatus
+  exercise: ImportCandidate | null
+  candidates: ImportCandidate[]
+  uses: number
+}
+
+export interface PlanImportPreview {
+  ready: boolean
+  errors: ImportIssue[]
+  warnings: ImportIssue[]
+  template: PlanTemplate | null
+  exercises: ExerciseMatch[]
+  targetPlan: { id: string; name: string; phases: number } | null
+}
+
+export interface PlanImportResult {
+  planId: string
+  phaseIds: string[]
+}
